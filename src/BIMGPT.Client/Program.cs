@@ -60,7 +60,10 @@ namespace BIMGPT.Client
             IChatClient chatClient = new AzureOpenAIClient(
                         endpoint,
                         apiKey)
-                    .AsChatClient(deploymentName);
+                    .AsChatClient(deploymentName)
+                    .AsBuilder()
+                    .UseFunctionInvocation()
+                    .Build();
 
             services.AddChatClient(chatClient);
             services.AddDevExpressAI();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Identity.Client;
 using Microsoft.VisualBasic;
 using OpenAI.Chat;
+using System.ComponentModel;
 using System.ServiceModel.Channels;
 
 namespace BIMGPT.Client.Pages
@@ -19,7 +20,7 @@ namespace BIMGPT.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             _conversation.Add(
-                new(ChatRole.System, "You are a product review assistant. Your job is to help people write great product reviews. Keep asking questions on the person's experience with the product until you have enough information to write a review. Then write the review for them and ask if they are happy with it.")
+                new(ChatRole.System, "You are an assistant. ")
             );
 
         }
@@ -27,11 +28,25 @@ namespace BIMGPT.Client.Pages
         {
             _conversation.Add(new Microsoft.Extensions.AI.ChatMessage(ChatRole.User, args.Content.ToString()));
 
-            Microsoft.Extensions.AI.ChatCompletion response = await _chatClient.CompleteAsync(_conversation);
+            ChatOptions _chatOptions = new ChatOptions
+            {
+                Tools = [AIFunctionFactory.Create(GetCurrentTime)]
+            };
+
+            Microsoft.Extensions.AI.ChatCompletion response = await _chatClient.CompleteAsync(_conversation, _chatOptions);
 
             _conversation.Add(response.Message);
 
             await args.Chat.SendMessage(response.Message.Text, ChatRole.Assistant);
         }
+
+
+        // 👇🏼 Define a time tool
+        [Description("Get the current time for a city")]
+        string GetCurrentTime(string city)
+        {
+            return $"It is {DateTime.Now.ToLongTimeString()} in {city}.";
+        }
     }
+
 }
