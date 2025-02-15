@@ -1,4 +1,7 @@
-﻿@page "/"
+﻿@using DevExpress.AIIntegration.Blazor.Chat
+
+@page "/"
+
 
 <PageTitle>Home</PageTitle>
 
@@ -7,4 +10,6 @@
 Welcome to your new app.
 
 
-<DxCalendar T="DateTime" VisibleDate="@DateTime.Today" CssClass="demo-calendar" />
+<div class="chat-demo-container">
+    <DxAIChat CssClass="demo-chat" />
+</div>
